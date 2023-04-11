@@ -9,26 +9,23 @@ def read_api_key(file_path):
     return config["api_key"]
 
 api_key = read_api_key("api_key.json")
-url = 'https://api.openai.com/v1/engines/davinci-codex/completions' # Replace 'davinci-codex' with the desired model name, like 'chatgpt'.
+url = 'https://api.openai.com/v1/chat/completions' # Replace 'davinci-codex' with the desired model name, like 'chatgpt'.
 headers = {
     'Content-Type': 'application/json',
     'Authorization': f'Bearer {api_key}'
 }
 
-def chatgpt_query(prompt, max_tokens=50, n=1, stop=None, temperature=0.7):
+def chatgpt_query(prompt):
     data = {
-        'prompt': prompt,
-        'max_tokens': max_tokens,
-        'n': n,
-        'stop': stop,
-        'temperature': temperature
+        "model": "gpt-3.5-turbo",
+        "messages": [{"role": "user", "content": prompt}]
     }
     
     response = requests.post(url, headers=headers, data=json.dumps(data))
 
     if response.status_code == 200:
         result = response.json()
-        return result['choices'][0]['text']
+        return result['choices'][0]['message']['content']
     else:
         raise Exception(f"API request failed with status code {response.status_code}")
 
